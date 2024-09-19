@@ -35,17 +35,17 @@ database running in a Oracle 19c.
 You should adjust lines below to set up the desired database connection:
 
 ```
-ORACLE_DSN	dbi:Oracle:<TSN_NAME>
-ORACLE_USER	<USER_NAME>
-ORACLE_PWD	<USER_PASSWORD>
+ORACLE_DSN  dbi:Oracle:<TSN_NAME>
+ORACLE_USER <USER_NAME>
+ORACLE_PWD  <USER_PASSWORD>
 ```
 
 And:
 
 ```
-PG_DSN		dbi:Pg:dbname=otrs;host=postgres;port=5432
-PG_USER	  otrs
-PG_PWD		<PG_PASSWORD>
+PG_DSN  dbi:Pg:dbname=otrs;host=postgres;port=5432
+PG_USER otrs
+PG_PWD  <PG_PASSWORD>
 ```
 
 The following configuration parameters were changed. Depending on you cenario, I
@@ -58,11 +58,11 @@ schemas, this is often the name of the owner user.
 
 - ```PG_SCHEMA public``` Name of the Postgres schema (I think "public" is OTRS default).
 
-- ```#EXCLUDE	aaatest_copy t1 procedure.+``` Uncomment and adjust this parameter
+- ```#EXCLUDE aaatest_copy t1 procedure.+``` Uncomment and adjust this parameter
 if you want to exclude some objects from the migration. In my case here, I wanted
 to exclude two test tables and all procedures.
 
-- ```INDEXES_RENAMING	1``` Very useful to use the same name standard OTRS uses
+- ```INDEXES_RENAMING 1``` Very useful to use the same name standard OTRS uses
 for index names.
 
 - ```PG_NUMERIC_TYPE 1``` OTRS doesn't use numeric type, so leave it with 1.
