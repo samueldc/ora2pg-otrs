@@ -203,7 +203,7 @@ ora2pg -t TEST -c ora2pg.conf >> ora2pg_diff_report.txt
 Analyse the report. Everything should be "ok". Until ora2pg version 23, there's
 a glitch that doubles the null constraints count. And since we altered the columns
 to use default values pointing to the sequences ourselves, the diff report will
-also complain about that. For the same reason, Oracle sequences to autoincrement
+also complain about that. For the same reason, Oracle triggers to autoincrement
 fields will also differ.
 
 That's it!
