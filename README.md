@@ -9,7 +9,7 @@ I'm planning to soon release a script - look foward for a "script" branch.
 
 - An environment with ora2pg installed with all its dependencies.
 - This environment should have access to both Oracle and PostgreSQL databases. 
-- This guided was tested with a OTRS 5.0.26 database and additional packages: 
+- This guide was tested with a OTRS 5.0.26 database and additional packages: 
 DynamicFieldITSMConfigItem, DynamicFieldRemoteDB, FAQ, GeneralCatalog, ITSM Bundle, 
 ImportExport, OTRSMasterSalve, ServiceImportExport, Survey, SystemMonitoring, 
 TemplateX, TimeAccounting, Znuny4OTRS-AutoSelect, Znuny4OTRS-CISearch, 
@@ -71,9 +71,11 @@ for index names.
 
 ora2pg does a very nice job infering most of PostgreSQL data types. 
 But the rules below will result in a schema more like OTRS PostgreSQL original
-schema. 
-All Oracle's clobs will became PostgreSQL's text. 
-The only differences I found was with article.a_body, article_search.a_body, 
+schema. All Oracle's clobs will became PostgreSQL's text. 
+
+- ```DATA_TYPE NUMBER(12):integer,NUMBER(5):smallint,NUMBER(20):bigint,DATE(7):timestamp(0)```
+
+The only differences I found were with article.a_body, article_search.a_body, 
 standard_template.text, sessions.data_value and xml_storage.xml_content_value:
 all these fields are of type varchar (without a max size) in the OTRS PostgreSQL
 original schema.
@@ -81,8 +83,6 @@ But some PostgreSQL specialists said that there's no difference between text and
 varchar.
 If you want to strictly follow OTRS PostgreSQL original schema, you could threat
 this in the ```MODIFY_TYPE``` parameter.
-
-- ```DATA_TYPE NUMBER(12):integer,NUMBER(5):smallint,NUMBER(20):bigint,DATE(7):timestamp(0)```
 
 ## Preparation
 
