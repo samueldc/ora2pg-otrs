@@ -86,7 +86,7 @@ this in the ```MODIFY_TYPE``` parameter.
 
 ## Preparation
 
-Check you Oracle connection (should print you Oracle dabase version):
+Check you Oracle connection (should print your Oracle dabase version):
 
 ```
 ora2pg -t SHOW_VERSION -c ora2pg.conf
@@ -103,8 +103,7 @@ Rename that file to ```output_TABLE.sql```.
 
 For some reason I don't known, the constraints are also generate. 
 But If you create the constraints before data migration, you'll violate those
-constraints.
-You need to create the constraints only after data migration.
+constraints. You need to create the constraints only after data migration.
 Edit ```output_TABLE.sql``` file and cut all the constraints creation commands
 and paste then in another file called ```output_CONSTRAINTS.sql```.
 But you could leave the index creation commands in the ```output_TABLE.sql``` file.
@@ -123,8 +122,7 @@ related with tables removed after uninstalled OTRS packages.
 OTRS PostgreSQL original schema uses sequences as default values for most primary keys.
 But ora2pg (at least in version 23) was unable to migrate that. To workaround that,
 we should generate a ```output_NEXTVAL.sql``` file with the proper commands to
-address that.
-This file should look like this:
+address that. This file should look like this:
 
 ```
 ALTER TABLE acl ALTER COLUMN id SET DEFAULT nextval('se_acl');
@@ -142,7 +140,8 @@ ALTER TABLE virtual_fs_db ALTER COLUMN id SET DEFAULT nextval('se_virtual_fs_db'
 You could generate your own file or use the file provided here. Some other files
 are provided here for ilustration purposes and for you convinience.
 
-Also, the command below could be used to generate the ```output_NEXTVAL.sql``` file:
+Also, the command below could be used to generate the ```output_NEXTVAL.sql``` 
+file based on the contents ```output_TABLE.sql```:
 
 ```
 grep -i "CREATE TABLE" docker/httpd/output_TABLE.sql | awk '{print $3}' | xargs -I {} echo "ALTER TABLE {} ALTER COLUMN id SET DEFAULT nextval('se_{}');" >> output_NEXVAL.sql
