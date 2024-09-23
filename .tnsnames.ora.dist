@@ -1,0 +1,22 @@
+OLTP1 =
+  (DESCRIPTION= 
+    (ADDRESS_LIST =
+      (FAILOVER = ON)
+      (ADDRESS = (PROTOCOL = tcp)(HOST = host1)(PORT = 1521))
+      (ADDRESS = (PROTOCOL = tcp)(HOST = host2)(PORT = 1521))
+      (ADDRESS = (PROTOCOL = tcp)(HOST = host3)(PORT = 1521))
+    )
+    (CONNECT_DATA=
+      (SERVICE_NAME= oltp1.example.com)
+      (SERVER = DEDICATED)(FAILOVER_MODE =(TYPE = SELECT)(METHOD = BASIC)(RETRIES = 1)(DELAY = 1))
+    )
+  )
+
+OLTP1DES =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = host1des)(PORT = 1521))
+    (CONNECT_DATA =
+      (sid = oltp1des)
+      (service_name = oltp1des.example.com)
+    )
+  )

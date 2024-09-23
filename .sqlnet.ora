@@ -1,0 +1,4 @@
+#ADR_BASE=/opt/oracle/instantclient_19_16/log
+#DIAG_ADR_ENABLED=off
+#TRACE_LEVEL_SERVER=off
+SQLNET.EXPIRE_TIME=30

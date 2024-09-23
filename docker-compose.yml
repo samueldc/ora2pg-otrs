@@ -1,0 +1,47 @@
+version: "3.6"
+services:
+  ora2pg:
+    build:
+      context: .
+      dockerfile: ./docker/ora2pg/Dockerfile
+    command: [ "-l" ]
+    depends_on:
+      - postgres
+    shm_size: 1gb
+    environment:
+      - PG_HOST=${PG_HOST:-postgres}
+      - PG_DATABASE=${PG_DATABASE:-otrs}
+      - PG_USER=${PG_USER:-otrs}
+      - PG_PASSWORD=${PG_PASSWORD:-otrs}
+      - ORACLE_TNS_NAME=${ORACLE_TNS_NAME:-OLTP1DES}
+      - ORACLE_USER_NAME=${ORACLE_USER_NAME:-usr_otrs}
+      - ORACLE_USER_PASSWORD=${ORACLE_USER_PASSWORD:-otrs}
+      - ORACLE_SCHEMA_NAME=${ORACLE_SCHEMA_NAME:-usr_otrs}
+      - NLS_LANG=American_America.UTF8
+      - ORACLE_HOME=/opt/oracle/instantclient_19_16
+      - TNS_ADMIN=/opt/oracle/instantclient_19_16/network/admin
+    volumes: 
+      - type: bind
+        source: .
+        target: /var/tmp/
+    networks:
+      - network
+    extra_hosts:
+      - host.docker.internal:host-gateway
+  postgres:
+    build: ./docker/postgres
+    shm_size: 256mb
+    environment:
+      - POSTGRES_PASSWORD=${PG_PASSWORD:-otrs}
+      - POSTGRES_USER=${PG_USER:-otrs}
+      - POSTGRES_DB=${PG_DATABASE:-otrs}
+    volumes:
+      - type: volume
+        source: postgres
+        target: /var/lib/postgresql/data
+    networks:
+      - network
+networks:
+  network:
+volumes:
+  postgres:
