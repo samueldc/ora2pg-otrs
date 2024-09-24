@@ -48,11 +48,15 @@ FROM dockerhub.camara.leg.br/dockerhub/library/debian:12
         && DEBIAN_FRONTEND='noninteractive' apt-get install -y --no-install-recommends tdsodbc \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/*
-    COPY --from=oracle_download /opt/oracle/instantclient_19_16 /opt/oracle/instantclient_19_16
-    RUN ln -s /opt/oracle/instantclient_19_16/libclntshcore.so.19.1 /opt/oracle/instantclient_19_16/libclntshcore.so \
-        && ln -s /opt/oracle/instantclient_19_16/libsqora.so.19.1 /opt/oracle/instantclient_19_16/libsqora.so \
-        && ORACLE_HOME=/opt/oracle/instantclient_19_16 PATH=$PATH:/opt/oracle/instantclient_19_16 TNS_ADMIN=/opt/oracle/instantclient_19_16/network/admin LD_LIBRARY_PATH=/opt/oracle/instantclient_19_16 NLS_LANG=American_America.UTF8 NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS' cpanm DBD::Oracle \
-        && mkdir /opt/oracle/instantclient_19_16/log
+    ENV ORACLE_HOME=/opt/oracle/instantclient_19_16
+    ENV NLS_LANG=American_America.UTF8
+    COPY --from=oracle_download $ORACLE_HOME $ORACLE_HOME
+    RUN ln -s $ORACLE_HOME/libclntshcore.so.19.1 $ORACLE_HOME/libclntshcore.so \
+        && ln -s $ORACLE_HOME/libsqora.so.19.1 $ORACLE_HOME/libsqora.so \
+        && ORACLE_HOME=$ORACLE_HOME PATH=$PATH:$ORACLE_HOME TNS_ADMIN=$ORACLE_HOME/network/admin LD_LIBRARY_PATH=$ORACLE_HOME NLS_LANG=$NLS_LANG NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS' cpanm DBD::Oracle \
+        && mkdir $ORACLE_HOME/log
+    #COPY ./docker/ora2pg/.tnsnames.ora $ORACLE_HOME/network/admin/tnsnames.ora
+    #COPY ./docker/ora2pg/.sqlnet.ora $ORACLE_HOME/network/admin/sqlnet.ora
     # https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
     # http://www.unixodbc.org/doc/FreeTDS.html
     RUN apt-get update \
@@ -66,7 +70,10 @@ FROM dockerhub.camara.leg.br/dockerhub/library/debian:12
         && sed -i 's/\[ODBC Driver 18 for SQL Server\]/\[MSSQL\]/g' /etc/odbcinst.ini \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/*
+    COPY ./docker/ora2pg/entrypoint.sh /usr/local/bin/
+    RUN chmod +x /usr/local/bin/entrypoint.sh
     COPY ./docker/ora2pg/ora2pg.conf /etc/ora2pg/ora2pg.conf
+    VOLUME /var/tmp
     WORKDIR /var/tmp
     COPY ./docker/ora2pg/* /var/tmp/
     ENTRYPOINT ["entrypoint.sh"]

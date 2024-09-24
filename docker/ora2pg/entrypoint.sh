@@ -32,8 +32,8 @@ printf "export ORACLE_HOME=$ORACLE_HOME\n" >> /etc/profile
 printf "export TNS_ADMIN=$TNS_ADMIN\n" >> /etc/profile
 printf "export PATH=$PATH\n" >> /etc/profile
 printf "export LD_LIBRARY_PATH=$ORACLE_HOME\n" >> /etc/profile
-ln -s .tnsnames.ora $TNS_ADMIN/tnsnames.ora
-ln -s .sqlnet.ora $TNS_ADMIN/sqlnet.ora
+ln -s ${PWD}/.tnsnames.ora $TNS_ADMIN/tnsnames.ora
+ln -s ${PWD}/.sqlnet.ora $TNS_ADMIN/sqlnet.ora
 
 # Creates postgres password file based on env variables
 echo "$PG_HOST:5432:$PG_DATABASE:$PG_USER:$PG_PASSWORD" > .pgpass
@@ -51,13 +51,13 @@ while pg_isready -h $PG_HOST -p 5432 -U $PG_USER -d $PG_DATABASE -q 2> /dev/null
   sleep 5;
 done
 
-# Check if environment is local
-OTRS_ENVIRONMENT=''
+# Check flags
+FLAGS=''
 while getopts 'lmoic' OPTION; do
   case "$OPTION" in
     l)
-      OTRS_ENVIRONMENT='local'
-      echo "Local OTRS environment => Will not merge database" # Used to prevent you from losing your local database changes
+      FLAGS="$OPTION"
+      echo "Flags: $FLAGS"
       ;;
     ?)
       # Do nothing else
@@ -66,10 +66,22 @@ while getopts 'lmoic' OPTION; do
 done
 
 # If environment is not local...
-if [[ $OTRS_ENVIRONMENT != 'local' ]]; then
+if [[ $FLAGS != 'l' ]]; then
   # Do nothing
-  ;
+  echo 'Do nothing...'
 fi
 
-# Runs httpd
-echo "Ok"
+# Replace env variables inside ora2pg.conf
+sed -i "s/<ORACLE_TNS_NAME>/$ORACLE_TNS_NAME/g" ora2pg.conf
+sed -i "s/<ORACLE_USER_NAME>/$ORACLE_USER_NAME/g" ora2pg.conf
+sed -i "s/<ORACLE_USER_PASSWORD>/$ORACLE_USER_PASSWORD/g" ora2pg.conf
+sed -i "s/<ORACLE_SCHEMA_NAME>/$ORACLE_SCHEMA_NAME/g" ora2pg.conf
+sed -i "s/<PG_DATABASE>/$PG_DATABASE/g" ora2pg.conf
+sed -i "s/<PG_HOST>/$PG_HOST/g" ora2pg.conf
+sed -i "s/<PG_USER>/$PG_USER/g" ora2pg.conf
+sed -i "s/<PG_PASSWORD>/$PG_PASSWORD/g" ora2pg.conf
+
+# Checks ora2pg connection
+ora2pg -t SHOW_VERSION -c ora2pg.conf
+
+cat

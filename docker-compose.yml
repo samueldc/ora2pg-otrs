@@ -20,10 +20,10 @@ services:
       - NLS_LANG=American_America.UTF8
       - ORACLE_HOME=/opt/oracle/instantclient_19_16
       - TNS_ADMIN=/opt/oracle/instantclient_19_16/network/admin
-    volumes: 
-      - type: bind
-        source: .
-        target: /var/tmp/
+    # volumes:
+    #   - type: volume
+    #     source: ora2pg-tmp
+    #     target: /var/tmp
     networks:
       - network
     extra_hosts:
@@ -44,4 +44,5 @@ services:
 networks:
   network:
 volumes:
+  ora2pg-tmp:
   postgres:
